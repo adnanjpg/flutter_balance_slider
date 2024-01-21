@@ -37,11 +37,17 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+final _calcVals = <String, TextBox>{};
+
 // inspired from https://stackoverflow.com/a/52991124/12555423
 TextBox _calcLastLineEnd({
   required BuildContext context,
   required TextSpan targetText,
 }) {
+  if (_calcVals.containsKey(targetText.toPlainText())) {
+    return _calcVals[targetText.toPlainText()]!;
+  }
+
   final richTextWidget = Text.rich(targetText).build(context) as RichText;
   final renderObject = richTextWidget.createRenderObject(context);
   renderObject.layout(
@@ -55,6 +61,9 @@ TextBox _calcLastLineEnd({
         ),
       )
       .last;
+
+  _calcVals[targetText.toPlainText()] = lastBox;
+
   return lastBox;
 }
 
