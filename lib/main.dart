@@ -205,18 +205,21 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   }
 
   Widget _seperator() {
-    return GestureDetector(
-      onPanUpdate: (details) {
-        final dx = details.delta.dx;
-        final newValue = widget.value + dx / totalSize;
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeLeftRight,
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          final dx = details.delta.dx;
+          final newValue = widget.value + dx / totalSize;
 
-        debugPrint('dx: $dx, newValue: $newValue');
+          debugPrint('dx: $dx, newValue: $newValue');
 
-        if (newValue >= 0 && newValue <= 1) {
-          widget.onChanged(newValue);
-        }
-      },
-      child: _seperatorBod(),
+          if (newValue >= 0 && newValue <= 1) {
+            widget.onChanged(newValue);
+          }
+        },
+        child: _seperatorBod(),
+      ),
     );
   }
 }
