@@ -32,22 +32,44 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Balance Slider'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: BalanceSliderWidget(
-              leftText: 'COFFEE',
-              rightText: 'MILK',
-              leftColor: const Color.fromARGB(255, 78, 33, 5),
-              rightColor: const Color(0xFFE6E6E6),
-              value: 0.5,
-              onChanged: (value) {},
-            ),
+      body: const _Bod(),
+    );
+  }
+}
+
+class _Bod extends StatefulWidget {
+  const _Bod();
+
+  @override
+  State<_Bod> createState() => _BodState();
+}
+
+class _BodState extends State<_Bod> {
+  double value = 0.5;
+
+  void _onChanged(double newValue) {
+    setState(() {
+      value = newValue;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Center(
+          child: BalanceSliderWidget(
+            leftText: 'COFFEE',
+            rightText: 'MILK',
+            leftColor: const Color.fromARGB(255, 78, 33, 5),
+            rightColor: const Color(0xFFE6E6E6),
+            value: value,
+            onChanged: _onChanged,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -67,7 +89,7 @@ extension on Color {
   }
 }
 
-class BalanceSliderWidget extends StatelessWidget {
+class BalanceSliderWidget extends StatefulWidget {
   final String leftText;
   final String rightText;
 
@@ -87,16 +109,22 @@ class BalanceSliderWidget extends StatelessWidget {
     required this.rightColor,
   });
 
-  double get leftValue => value;
-  double get rightValue => 1 - value;
+  @override
+  State<BalanceSliderWidget> createState() => _BalanceSliderWidgetState();
+}
+
+class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
+  double get leftValue => widget.value;
+  double get rightValue => 1 - widget.value;
 
   String get leftPercentage => (leftValue * 100).toStringAsFixed(0);
   String get rightPercentage => (rightValue * 100).toStringAsFixed(0);
 
+  static const totalSize = 500.0;
+  static const seperatorSize = 20.0;
+
   @override
   Widget build(BuildContext context) {
-    const totalSize = 500.0;
-    const seperatorSize = 20.0;
     final leftSize = (totalSize - seperatorSize) * leftValue;
     final rightSize = (totalSize - seperatorSize) * rightValue;
 
@@ -141,34 +169,54 @@ class BalanceSliderWidget extends StatelessWidget {
       child: Row(
         children: [
           txtPiece(
-            text: leftText,
-            color: leftColor,
+            text: widget.leftText,
+            color: widget.leftColor,
             percentage: leftPercentage,
             size: leftSize,
           ),
-          Container(
-            width: seperatorSize,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 7.5,
-              vertical: 10,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(50),
-                ),
-                color: Colors.grey[100],
-              ),
-            ),
-          ),
+          _seperator(),
           txtPiece(
-            text: rightText,
-            color: rightColor,
+            text: widget.rightText,
+            color: widget.rightColor,
             percentage: rightPercentage,
             size: rightSize,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _seperatorBod() {
+    return Container(
+      width: seperatorSize,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 7.5,
+        vertical: 10,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
+          color: Colors.grey[100],
+        ),
+      ),
+    );
+  }
+
+  Widget _seperator() {
+    return GestureDetector(
+      onPanUpdate: (details) {
+        final dx = details.delta.dx;
+        final newValue = widget.value + dx / totalSize;
+
+        debugPrint('dx: $dx, newValue: $newValue');
+
+        if (newValue >= 0 && newValue <= 1) {
+          widget.onChanged(newValue);
+        }
+      },
+      child: _seperatorBod(),
     );
   }
 }
