@@ -111,7 +111,7 @@ class _BodState extends State<_Bod> {
             leftText: 'COFFEE',
             rightText: 'MILK',
             leftColor: const Color.fromARGB(255, 78, 33, 5),
-            rightColor: const Color(0xFFE6E6E6),
+            rightColor: const Color.fromARGB(255, 152, 152, 152),
             value: value,
             onChanged: _onChanged,
           ),
@@ -181,7 +181,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
         text: '${widget.rightText} %$rightPercentage',
         style: TextStyle(
           fontSize: fontSize,
-          color: widget.rightColor.increaseBrightness(0.7),
+          color: widget.rightColor.increaseBrightness(0.5),
         ),
       );
 
@@ -189,7 +189,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
         text: '${widget.leftText} %$leftPercentage',
         style: TextStyle(
           fontSize: fontSize,
-          color: widget.leftColor.increaseBrightness(0.7),
+          color: widget.leftColor.increaseBrightness(0.5),
         ),
       );
 
