@@ -295,7 +295,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       width: seperatorSize,
       padding: const EdgeInsets.symmetric(
         horizontal: 7.5,
-        vertical: 10,
+        // vertical: 10,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -309,20 +309,36 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   }
 
   Widget _seperator() {
-    return MouseRegion(
-      cursor: SystemMouseCursors.resizeLeftRight,
-      child: GestureDetector(
-        onPanUpdate: (details) {
-          final dx = details.delta.dx;
-          final newValue = widget.value + dx / totalSize;
+    return GestureDetector(
+      key: const ValueKey('seperator'),
+      onPanUpdate: (details) {
+        final dx = details.delta.dx;
+        final newValue = widget.value + dx / totalSize;
 
-          // debugPrint('dx: $dx, newValue: $newValue');
+        // debugPrint('dx: $dx, newValue: $newValue');
 
-          if (newValue >= 0 && newValue <= 1) {
-            widget.onChanged(newValue);
-          }
-        },
-        child: _seperatorBod(),
+        if (newValue >= 0 && newValue <= 1) {
+          widget.onChanged(newValue);
+        }
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.resizeLeftRight,
+        child: Column(
+          children: [
+            Expanded(
+              flex: anyNeedsNewLine ? 10 : 1,
+              child: const SizedBox(),
+            ),
+            Expanded(
+              flex: 6,
+              child: _seperatorBod(),
+            ),
+            Expanded(
+              flex: anyNeedsNewLine ? 0 : 1,
+              child: const SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
   }
