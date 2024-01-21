@@ -175,7 +175,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
 
   static const fontSize = 16.0;
 
-  static const textSidePadding = 7.5;
+  static const double textSidePadding = 20.0;
 
   TextSpan get rSpan => TextSpan(
         text: '${widget.rightText} %$rightPercentage',
