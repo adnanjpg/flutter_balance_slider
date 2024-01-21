@@ -170,31 +170,81 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   static const totalSize = 500.0;
   static const seperatorSize = 20.0;
 
+  double get lSize => (totalSize - seperatorSize) * leftValue;
+  double get rSize => (totalSize - seperatorSize) * rightValue;
+
+  TextSpan get rSpan => TextSpan(
+        text: '${widget.rightText} %$rightPercentage',
+        style: TextStyle(
+          fontSize: 24,
+          color: widget.rightColor.increaseBrightness(0.7),
+        ),
+      );
+
+  TextSpan get lSpan => TextSpan(
+        text: '${widget.leftText} %$leftPercentage',
+        style: TextStyle(
+          fontSize: 24,
+          color: widget.leftColor.increaseBrightness(0.7),
+        ),
+      );
+
+  bool get anyNeedsNewLine =>
+      _textWillRenderOnNewLine(
+        context: context,
+        targetText: rSpan,
+        maxWidth: rSize,
+      ) ||
+      _textWillRenderOnNewLine(
+        context: context,
+        targetText: lSpan,
+        maxWidth: lSize,
+      );
+
   @override
   Widget build(BuildContext context) {
-    final leftSize = (totalSize - seperatorSize) * leftValue;
-    final rightSize = (totalSize - seperatorSize) * rightValue;
-
     Widget txtPiece({
-      required String text,
+      required TextSpan span,
       required Color color,
       required String percentage,
       required double size,
     }) {
-      final span = TextSpan(
-        text: '$text %$percentage',
-        style: TextStyle(
-          fontSize: 24,
-          color: color.increaseBrightness(0.7),
-        ),
-      );
-
-      final needsNewLine = _textWillRenderOnNewLine(
-        context: context,
-        targetText: span,
-        maxWidth: size,
-      );
-
+      if (anyNeedsNewLine) {
+        return SizedBox(
+          width: size,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Text.rich(
+                    TextSpan(
+                      text: span.text,
+                      style: span.style?.copyWith(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: SizedBox(
+                  width: size,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
       return Column(
         children: [
           Expanded(
@@ -202,7 +252,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
               width: size,
               child: Container(
                 decoration: BoxDecoration(
-                  color: needsNewLine ? Colors.blue : color,
+                  color: color,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),
@@ -223,17 +273,17 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       child: Row(
         children: [
           txtPiece(
-            text: widget.leftText,
+            span: lSpan,
             color: widget.leftColor,
             percentage: leftPercentage,
-            size: leftSize,
+            size: lSize,
           ),
           _seperator(),
           txtPiece(
-            text: widget.rightText,
+            span: rSpan,
             color: widget.rightColor,
             percentage: rightPercentage,
-            size: rightSize,
+            size: rSize,
           ),
         ],
       ),
