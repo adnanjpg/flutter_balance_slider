@@ -213,20 +213,22 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       required String percentage,
       required double size,
     }) {
-      return Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Text.rich(span),
-            ),
-          ),
-          if (anyNeedsNewLine)
-            const Expanded(
-              flex: 1,
-              child: SizedBox(),
-            ),
-        ],
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final maxh = constraints.maxHeight;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: anyNeedsNewLine ? maxh - maxh / 3 : maxh,
+                child: Center(
+                  child: Text.rich(span),
+                ),
+              ),
+            ],
+          );
+        },
       );
     }
 
@@ -236,31 +238,34 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       required String percentage,
       required double size,
     }) {
-      return SizedBox(
-        width: size,
-        child: Column(
-          children: [
-            if (anyNeedsNewLine)
-              const Expanded(
-                flex: 2,
-                child: SizedBox(),
-              ),
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                width: size,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final maxh = constraints.maxHeight;
+          return SizedBox(
+            width: size,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: anyNeedsNewLine ? maxh / 3 : maxh,
+                  width: double.infinity,
+                  child: SizedBox(
+                    width: size,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       );
     }
 
