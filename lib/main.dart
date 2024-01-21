@@ -164,8 +164,10 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   double get leftValue => widget.value;
   double get rightValue => 1 - widget.value;
 
-  String get leftPercentage => (leftValue * 100).toStringAsFixed(0);
-  String get rightPercentage => (rightValue * 100).toStringAsFixed(0);
+  double get leftPercentage => (leftValue * 100);
+  double get rightPercentage => (rightValue * 100);
+  String get leftPercentageStr => leftPercentage.toStringAsFixed(0);
+  String get rightPercentageStr => rightPercentage.toStringAsFixed(0);
 
   static const totalSize = 500.0;
   static const seperatorSize = 20.0;
@@ -178,7 +180,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   static const double textSidePadding = 20.0;
 
   TextSpan get rSpan => TextSpan(
-        text: '${widget.rightText} %$rightPercentage',
+        text: '${widget.rightText} %$rightPercentageStr',
         style: TextStyle(
           fontSize: fontSize,
           color: widget.rightColor.increaseBrightness(0.5),
@@ -186,7 +188,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       );
 
   TextSpan get lSpan => TextSpan(
-        text: '${widget.leftText} %$leftPercentage',
+        text: '${widget.leftText} %$leftPercentageStr',
         style: TextStyle(
           fontSize: fontSize,
           color: widget.leftColor.increaseBrightness(0.5),
@@ -210,7 +212,6 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
     Widget txtPiece({
       required TextSpan span,
       required Color color,
-      required String percentage,
       required double size,
     }) {
       return LayoutBuilder(
@@ -235,7 +236,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
     Widget bgPiece({
       required TextSpan span,
       required Color color,
-      required String percentage,
+      required double percentage,
       required double size,
     }) {
       return LayoutBuilder(
@@ -254,7 +255,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
                     width: size,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: color,
+                        color: color.increaseBrightness(percentage / 100 / 6),
                         borderRadius: const BorderRadius.all(
                           Radius.circular(10),
                         ),
@@ -301,13 +302,11 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
                 txtPiece(
                   span: lSpan,
                   color: widget.leftColor,
-                  percentage: leftPercentage,
                   size: lSize,
                 ),
                 txtPiece(
                   span: rSpan,
                   color: widget.rightColor,
-                  percentage: rightPercentage,
                   size: rSize,
                 ),
               ],
