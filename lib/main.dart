@@ -175,6 +175,8 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
 
   static const fontSize = 16.0;
 
+  static const textSidePadding = 7.5;
+
   TextSpan get rSpan => TextSpan(
         text: '${widget.rightText} %$rightPercentage',
         style: TextStyle(
@@ -195,12 +197,12 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       _textWillRenderOnNewLine(
         context: context,
         targetText: rSpan,
-        maxWidth: rSize,
+        maxWidth: rSize - textSidePadding * 2,
       ) ||
       _textWillRenderOnNewLine(
         context: context,
         targetText: lSpan,
-        maxWidth: lSize,
+        maxWidth: lSize - textSidePadding * 2,
       );
 
   @override
@@ -286,7 +288,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 7.5,
+              horizontal: textSidePadding,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
