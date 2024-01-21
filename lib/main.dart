@@ -37,6 +37,44 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+// inspired from https://stackoverflow.com/a/52991124/12555423
+TextBox _calcLastLineEnd({
+  required BuildContext context,
+  required TextSpan targetText,
+}) {
+  final richTextWidget = Text.rich(targetText).build(context) as RichText;
+  final renderObject = richTextWidget.createRenderObject(context);
+  renderObject.layout(
+    const BoxConstraints(),
+  );
+  final lastBox = renderObject
+      .getBoxesForSelection(
+        TextSelection(
+          baseOffset: 0,
+          extentOffset: targetText.toPlainText().length,
+        ),
+      )
+      .last;
+  return lastBox;
+}
+
+bool _textWillRenderOnNewLine({
+  required BuildContext context,
+  required TextSpan targetText,
+  required double maxWidth,
+}) {
+  final textRequiredSize = _calcLastLineEnd(
+    context: context,
+    targetText: targetText,
+  );
+
+  final textRequiredWidth = textRequiredSize.end;
+
+  final willRenderOnNewLine = textRequiredWidth > maxWidth;
+
+  return willRenderOnNewLine;
+}
+
 class _Bod extends StatefulWidget {
   const _Bod();
 
@@ -134,6 +172,20 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       required String percentage,
       required double size,
     }) {
+      final span = TextSpan(
+        text: '$text %$percentage',
+        style: TextStyle(
+          fontSize: 24,
+          color: color.increaseBrightness(0.7),
+        ),
+      );
+
+      final needsNewLine = _textWillRenderOnNewLine(
+        context: context,
+        targetText: span,
+        maxWidth: size,
+      );
+
       return Column(
         children: [
           Expanded(
@@ -141,20 +193,13 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
               width: size,
               child: Container(
                 decoration: BoxDecoration(
-                  color: color,
+                  color: needsNewLine ? Colors.blue : color,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    '$text %$percentage',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: color.increaseBrightness(0.7),
-                    ),
-                  ),
+                  child: Text.rich(span),
                 ),
               ),
             ),
@@ -212,7 +257,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
           final dx = details.delta.dx;
           final newValue = widget.value + dx / totalSize;
 
-          debugPrint('dx: $dx, newValue: $newValue');
+          // debugPrint('dx: $dx, newValue: $newValue');
 
           if (newValue >= 0 && newValue <= 1) {
             widget.onChanged(newValue);
