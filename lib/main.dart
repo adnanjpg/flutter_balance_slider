@@ -173,10 +173,12 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   double get lSize => (totalSize - seperatorSize) * leftValue;
   double get rSize => (totalSize - seperatorSize) * rightValue;
 
+  static const fontSize = 16.0;
+
   TextSpan get rSpan => TextSpan(
         text: '${widget.rightText} %$rightPercentage',
         style: TextStyle(
-          fontSize: 24,
+          fontSize: fontSize,
           color: widget.rightColor.increaseBrightness(0.7),
         ),
       );
@@ -184,7 +186,7 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
   TextSpan get lSpan => TextSpan(
         text: '${widget.leftText} %$leftPercentage',
         style: TextStyle(
-          fontSize: 24,
+          fontSize: fontSize,
           color: widget.leftColor.increaseBrightness(0.7),
         ),
       );
@@ -209,81 +211,100 @@ class _BalanceSliderWidgetState extends State<BalanceSliderWidget> {
       required String percentage,
       required double size,
     }) {
-      if (anyNeedsNewLine) {
-        return SizedBox(
-          width: size,
-          child: Column(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Text.rich(
-                    TextSpan(
-                      text: span.text,
-                      style: span.style?.copyWith(
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  width: size,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
       return Column(
         children: [
           Expanded(
-            child: SizedBox(
-              width: size,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
+            flex: 2,
+            child: Center(
+              child: Text.rich(span),
+            ),
+          ),
+          if (anyNeedsNewLine)
+            const Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
+        ],
+      );
+    }
+
+    Widget bgPiece({
+      required TextSpan span,
+      required Color color,
+      required String percentage,
+      required double size,
+    }) {
+      return SizedBox(
+        width: size,
+        child: Column(
+          children: [
+            if (anyNeedsNewLine)
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+            Expanded(
+              flex: 1,
+              child: SizedBox(
+                width: size,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: Text.rich(span),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
     return SizedBox(
       height: 60,
       width: totalSize,
-      child: Row(
+      child: Stack(
         children: [
-          txtPiece(
-            span: lSpan,
-            color: widget.leftColor,
-            percentage: leftPercentage,
-            size: lSize,
+          Row(
+            children: [
+              bgPiece(
+                span: lSpan,
+                color: widget.leftColor,
+                percentage: leftPercentage,
+                size: lSize,
+              ),
+              _seperator(),
+              bgPiece(
+                span: rSpan,
+                color: widget.rightColor,
+                percentage: rightPercentage,
+                size: rSize,
+              ),
+            ],
           ),
-          _seperator(),
-          txtPiece(
-            span: rSpan,
-            color: widget.rightColor,
-            percentage: rightPercentage,
-            size: rSize,
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 7.5,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                txtPiece(
+                  span: lSpan,
+                  color: widget.leftColor,
+                  percentage: leftPercentage,
+                  size: lSize,
+                ),
+                txtPiece(
+                  span: rSpan,
+                  color: widget.rightColor,
+                  percentage: rightPercentage,
+                  size: rSize,
+                ),
+              ],
+            ),
           ),
         ],
       ),
